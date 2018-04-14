@@ -89,6 +89,7 @@ export default class App extends Component {
     source={require('./wave-icon.png')}
     style={{width: 100, height: 100}}></Image>;
   };
+  // No idea what this shit does lol
   async getDialogFlow(msg) {
     const ACCESS_TOKEN = "b3508621503a4fe5b7c924a726ee73b6";
 
