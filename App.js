@@ -12,21 +12,29 @@ import {
   Alert,
   TouchableHighlight,
   PropTypes,
-  Image
+  Image,
+  Switch
 } from "react-native";
 import Tts from "react-native-tts";
 import SpeechAndroid from "react-native-android-voice";
 import faker from "faker";
 import {
   Button,
-  Text,
   Icon,
   Header,
   Body,
   Title,
-  Container
+  Container,
+  Text
 } from "native-base";
-import { PlaySound, StopSound, PlaySoundRepeat, PlaySoundMusicVolume } from 'react-native-play-sound';
+import {
+  PlaySound,
+  StopSound,
+  PlaySoundRepeat,
+  PlaySoundMusicVolume
+} from "react-native-play-sound";
+import Toast from "react-native-toast-native";
+import SmartMode from "./smartMode";
 
 // type Props = {};
 export default class App extends Component {
@@ -37,6 +45,7 @@ export default class App extends Component {
     this.state = {
       showText: true,
       isReady: false,
+      mode: false,
       pressStatus: false,
       message: "I GOT YOU BISH",
       fileNames: ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -53,7 +62,11 @@ export default class App extends Component {
   handlePress = () => {
     //const fakeText = ["Fuckyou", "SUck it", "I wDumbass", "Bazinga", "Yaas Queen"];
     this.setState({ showText: true, pressStatus: true });
-    PlaySound(this.state.fileNames[Math.floor(Math.random() * this.state.fileNames.length)]);
+    PlaySound(
+      this.state.fileNames[
+        Math.floor(Math.random() * this.state.fileNames.length)
+      ]
+    );
     /* if (this.state.showText) {
       //Tts.speak(fakeText[Math.floor(Math.random() * fakeText.length)]);
       this.setState({ showText: false });
@@ -85,11 +98,13 @@ export default class App extends Component {
   };
 
   otherButton = () => {
-    return <Image 
-    source={require('./wave-icon.png')}
-    style={{width: 100, height: 100}}></Image>;
+    return (
+      <Image
+        source={require("./wave-icon.png")}
+        style={{ width: 100, height: 100 }}
+      />
+    );
   };
-  // No idea what this shit does lol
   async getDialogFlow(msg) {
     const ACCESS_TOKEN = "b3508621503a4fe5b7c924a726ee73b6";
 
@@ -120,6 +135,18 @@ export default class App extends Component {
     }
   }
 
+  onSwitch(value) {
+    let damnit=["dumb","s"]
+    this.setState({ mode: value });
+    if (value) {
+      Toast.show("You in the smart mode bitch!", Toast.SHORT, Toast.TOP);
+      PlaySound('s');
+    } else {
+      Toast.show("You in the dumb mode bitch!", Toast.SHORT, Toast.TOP);
+      PlaySound('l');
+    }
+  }
+
   render() {
     return (
       <Container>
@@ -131,16 +158,30 @@ export default class App extends Component {
           </Body>
         </Header>
         <View style={styles.container}>
-          <TouchableHighlight
-            activeOpacity={1}
-            underlayColor={"#f2028e"}
-            onHideUnderlay={this._onHideUnderlay}
-            onShowUnderlay={this._onShowUnderlay}
-            style={styles.basicButton}
-            onPress={this.handlePress}
-          >
-            {!this.state.pressStatus ? this.normalButton() : this.otherButton()}
-          </TouchableHighlight>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text>Dumb Mode</Text>
+            <Switch
+              onValueChange={value => this.onSwitch(value)}
+              value={this.state.mode}
+            />
+            <Text>Smart Mode</Text>
+          </View>
+          {this.state.mode ? (
+            <SmartMode />
+          ) : (
+            <TouchableHighlight
+              activeOpacity={1}
+              underlayColor={"#f2028e"}
+              onHideUnderlay={this._onHideUnderlay}
+              onShowUnderlay={this._onShowUnderlay}
+              style={styles.basicButton}
+              onPress={this.handlePress}
+            >
+              {!this.state.pressStatus
+                ? this.normalButton()
+                : this.otherButton()}
+            </TouchableHighlight>
+          )}
         </View>
       </Container>
     );
@@ -163,6 +204,8 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     backgroundColor: "#e2689d",
-    borderRadius: 100
+    borderRadius: 100,
+    marginBottom: 100,
+    marginTop: 100
   }
 });
